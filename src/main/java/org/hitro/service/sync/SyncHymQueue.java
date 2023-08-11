@@ -23,6 +23,7 @@ public class SyncHymQueue implements HymQueue {
 
     @Override
     public boolean createChannel() {
+
         return false;
     }
 
