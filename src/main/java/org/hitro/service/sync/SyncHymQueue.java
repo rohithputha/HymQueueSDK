@@ -5,7 +5,12 @@ import org.hitro.config.HymQueueSdkConfiguration;
 import org.hitro.sdk.publicinterfaces.HymQueue;
 import org.hitro.service.SocketFactory;
 
+import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class SyncHymQueue implements HymQueue {
 
@@ -23,13 +28,27 @@ public class SyncHymQueue implements HymQueue {
 
     @Override
     public boolean createChannel() {
-
+        List<String> command = Arrays.asList("create_channel","sdk123","testChannel1","poll","\\w");
+        try {
+            dataSender.sendData(command);
+            System.out.println("data sent...");
+            System.out.println(dataReceiver.getData());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
     @Override
-    public <T> boolean addData() {
-        return false;
+    public <T> boolean addData(T data) {
+        List<Object> command = Arrays.asList("add_data","sdk123",(T)data,"testChannel1","poll","\\w");
+        try{
+            dataSender.sendData(command);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
     @Override

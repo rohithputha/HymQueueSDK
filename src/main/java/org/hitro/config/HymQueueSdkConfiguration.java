@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 
 public abstract class HymQueueSdkConfiguration {
 
-    private String channelName;
+    protected String channelName;
     public String getIPAddress() throws UnknownHostException {
         return InetAddress.getLocalHost().getHostAddress();
     }

@@ -36,7 +36,11 @@ public class DataReceiver {
                         inputCommandsByteList.get(inputCommandsByteList.size()-2)== Constants.getCommandSeperator()[0] &&
                         inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeperator()[1]
                 ){
+                    System.out.println(inputCommandsByteList.get(inputCommandsByteList.size()-2));
+                    System.out.println(inputCommandsByteList.get(inputCommandsByteList.size()-1));
+                    System.out.println(inputCommandsByteList.size());
                     byte[] data = this.convertToByteArray(inputCommandsByteList);
+                    System.out.println(data.length);
                     return (List<T>) IBinaryProtocol.getInstance().decode(data);
                 }
             }
