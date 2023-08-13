@@ -3,7 +3,7 @@ package org.hitro.sdk.publicinterfaces;
 public interface HymQueue {
     public boolean createChannel();
 
-    public <T> boolean addData();
+    public <T> boolean addData(T data);
 
     public boolean addSubscriber();
 
