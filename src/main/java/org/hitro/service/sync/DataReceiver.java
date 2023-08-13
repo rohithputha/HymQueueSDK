@@ -2,6 +2,7 @@ package org.hitro.service.sync;
 
 import org.hitro.binaryprotocol.publicinterfaces.IBinaryProtocol;
 import org.hitro.config.Constants;
+import org.hitro.service.SocketFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,12 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataReceiver {
-
-    private Socket socket;
-    public DataReceiver(Socket socket){
-        this.socket = socket;
-    }
+public class DataReceiver implements Runnable{
 
     private byte[] convertToByteArray(List<Byte> byteList){
         byte[] newByteArray = new byte[byteList.size()-2];
@@ -25,7 +21,8 @@ public class DataReceiver {
         return newByteArray;
     }
 
-    public <T> List<T> getData() throws IOException {
+    public <T> void  listenInputStream() throws IOException, InterruptedException {
+        Socket socket = SocketFactory.getSocket();
         synchronized (socket){
             InputStream inputStream = socket.getInputStream();
             List<Byte> inputCommandsByteList = new ArrayList<>();
@@ -33,18 +30,24 @@ public class DataReceiver {
             while((byteRead = inputStream.read())!=-1){
                 inputCommandsByteList.add((byte)byteRead);
                 if(inputCommandsByteList.size()>2 &&
-                        inputCommandsByteList.get(inputCommandsByteList.size()-2)== Constants.getCommandSeperator()[0] &&
-                        inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeperator()[1]
+                        inputCommandsByteList.get(inputCommandsByteList.size()-2)== Constants.getCommandSeparator()[0] &&
+                        inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeparator()[1]
                 ){
-                    System.out.println(inputCommandsByteList.get(inputCommandsByteList.size()-2));
-                    System.out.println(inputCommandsByteList.get(inputCommandsByteList.size()-1));
-                    System.out.println(inputCommandsByteList.size());
                     byte[] data = this.convertToByteArray(inputCommandsByteList);
                     System.out.println(data.length);
-                    return (List<T>) IBinaryProtocol.getInstance().decode(data);
+                    ResposeHolder.getInstance().addResponse((List<T>) IBinaryProtocol.getInstance().decode(data));
                 }
             }
         }
-        return null;
+
+    }
+
+    @Override
+    public void run() {
+        try {
+            listenInputStream();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

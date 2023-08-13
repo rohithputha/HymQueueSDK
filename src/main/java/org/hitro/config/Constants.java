@@ -9,5 +9,5 @@ public class Constants {
 
     @Getter private final static byte endByte = 119;
 
-    @Getter private final static byte[] commandSeperator = {backslash,endByte};
+    @Getter private final static byte[] commandSeparator = {backslash,endByte};
 }

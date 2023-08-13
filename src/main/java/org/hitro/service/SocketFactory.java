@@ -17,10 +17,15 @@ public class SocketFactory {
         }
 
     }
-
+    private static Socket socket;
     public static Socket getSocket(){
-        synchronized (SocketFactory.class){
-            return getConnectedSocket();
+        if(socket== null || socket.isClosed()){
+            synchronized (SocketFactory.class){
+               if(socket==null || socket.isClosed()){
+                   socket =  getConnectedSocket();
+               }
+            }
         }
+        return socket;
     }
 }

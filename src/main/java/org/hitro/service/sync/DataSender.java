@@ -5,36 +5,57 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.hitro.binaryprotocol.publicinterfaces.IBinaryProtocol;
-public class DataSender {
+import org.hitro.config.Constants;
+import org.hitro.service.SocketFactory;
 
-    private Socket socket;
-    public DataSender(Socket socket){
-        this.socket = socket;
+public class DataSender<T> implements Runnable{
+
+    private BlockingQueue<List<T>> dataQueue;
+    public DataSender(){
+        dataQueue = new ArrayBlockingQueue<>(10);
     }
-    public <T> void sendData(List<T> data) throws IOException {
-        byte[] encodedData = IBinaryProtocol.getInstance().encode(data);
-        for(int i=0;i<encodedData.length;i++){
-            System.out.print(encodedData[i]+"- ");
-        }
-        System.out.println(IBinaryProtocol.getInstance().decode(encodedData));
-        synchronized (socket){
-            OutputStream outputStream = socket.getOutputStream();
-            int bytesToSend = encodedData.length;
-            int offset=0;
-            while (bytesToSend > 0) {
-                int bytesToWrite = Math.min(21, bytesToSend); // Write up to 21 bytes at a time
-                outputStream.write(encodedData, offset, bytesToWrite);
-                outputStream.flush(); // Ensure immediate transmission
+    public void readQueueAndPushData() throws InterruptedException, IOException {
+        while(true){
+            List<T> data = this.dataQueue.take();
+            Socket socket = SocketFactory.getSocket();
 
-                offset += bytesToWrite;
-                bytesToSend -= bytesToWrite;
-                System.out.println(bytesToSend);
+            byte[] encodedData = IBinaryProtocol.getInstance().encode(data);
+            byte[] commandSep = Constants.getCommandSeparator();
+            byte[] combinedArray = new byte[encodedData.length + commandSep.length];
+            System.arraycopy(encodedData, 0, combinedArray, 0, encodedData.length);
+            System.arraycopy(commandSep, 0, combinedArray, encodedData.length, commandSep.length);
+
+            synchronized (socket){
+                OutputStream outputStream = socket.getOutputStream();
+                int bytesToSend = combinedArray.length;
+                int offset=0;
+                while (bytesToSend > 0) {
+                    int bytesToWrite = Math.min(25, bytesToSend);
+                    outputStream.write(combinedArray, offset, bytesToWrite);
+                    outputStream.flush();
+
+                    offset += bytesToWrite;
+                    bytesToSend -= bytesToWrite;
+                }
             }
+        }
 
-
+    }
+    public void sendData(List<T> data) throws InterruptedException {
+        this.dataQueue.put(data);
+    }
+    @Override
+    public void run() {
+        try {
+            readQueueAndPushData();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
-
 }

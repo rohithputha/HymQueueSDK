@@ -5,7 +5,6 @@ import org.hitro.dto.SubDataQueue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +35,8 @@ public class SubscriberConnection implements Runnable{
             while((byteRead = inputStream.read())!=-1){
                 inputCommandsByteList.add((byte)byteRead);
                 if(inputCommandsByteList.size()>2 &&
-                        inputCommandsByteList.get(inputCommandsByteList.size()-2)== Constants.getCommandSeperator()[0] &&
-                        inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeperator()[1]
+                        inputCommandsByteList.get(inputCommandsByteList.size()-2)== Constants.getCommandSeparator()[0] &&
+                        inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeparator()[1]
                 ){
                     byte[] data = this.convertToByteArray(inputCommandsByteList);
                     inputCommandsByteList = new ArrayList<>();
