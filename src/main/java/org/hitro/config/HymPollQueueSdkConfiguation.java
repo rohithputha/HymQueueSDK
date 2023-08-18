@@ -11,6 +11,6 @@ public class HymPollQueueSdkConfiguation extends HymQueueSdkConfiguration{
     }
     @Override
     public String getChannelType() {
-        return "POLL";
+        return "poll";
     }
 }
