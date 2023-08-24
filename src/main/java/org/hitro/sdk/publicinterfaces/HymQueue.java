@@ -5,7 +5,7 @@ public interface HymQueue {
 
     public <T> boolean addData(T data);
 
-    public boolean addSubscriber();
+    public boolean addSubscriber(Subscriber subscriber) throws InterruptedException;
 
     public <T> T getData();
 }

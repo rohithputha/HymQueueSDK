@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataReceiver implements Runnable{
-
     private byte[] convertToByteArray(List<Byte> byteList){
         byte[] newByteArray = new byte[byteList.size()-2];
         for(int i=0;i< byteList.size()-2;i++){
@@ -23,23 +22,25 @@ public class DataReceiver implements Runnable{
 
     public <T> void  listenInputStream() throws IOException, InterruptedException {
         Socket socket = SocketFactory.getSocket();
+        InputStream inputStream =null;
         synchronized (socket){
-            InputStream inputStream = socket.getInputStream();
-            List<Byte> inputCommandsByteList = new ArrayList<>();
-            int byteRead;
-            while((byteRead = inputStream.read())!=-1){
-                inputCommandsByteList.add((byte)byteRead);
-                if(inputCommandsByteList.size()>2 &&
+           inputStream  = socket.getInputStream();
+        }
+
+        List<Byte> inputCommandsByteList = new ArrayList<>();
+        int byteRead;
+        while((byteRead = inputStream.read())!=-1){
+            inputCommandsByteList.add((byte)byteRead);
+            if(inputCommandsByteList.size()>2 &&
                         inputCommandsByteList.get(inputCommandsByteList.size()-2)== Constants.getCommandSeparator()[0] &&
                         inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeparator()[1]
-                ){
+            ){
                     byte[] data = this.convertToByteArray(inputCommandsByteList);
                     System.out.println(data.length);
                     ResposeHolder.getInstance().addResponse((List<T>) IBinaryProtocol.getInstance().decode(data));
-                }
             }
         }
-
+        System.out.println("done with response listening");
     }
 
     @Override

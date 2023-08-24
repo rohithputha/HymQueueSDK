@@ -28,20 +28,21 @@ public class DataSender<T> implements Runnable{
             byte[] combinedArray = new byte[encodedData.length + commandSep.length];
             System.arraycopy(encodedData, 0, combinedArray, 0, encodedData.length);
             System.arraycopy(commandSep, 0, combinedArray, encodedData.length, commandSep.length);
-
-            synchronized (socket){
-                OutputStream outputStream = socket.getOutputStream();
-                int bytesToSend = combinedArray.length;
-                int offset=0;
-                while (bytesToSend > 0) {
+            OutputStream outputStream = null;
+            synchronized (socket) {
+                outputStream = socket.getOutputStream();
+            }
+            int bytesToSend = combinedArray.length;
+            int offset=0;
+            while (bytesToSend > 0) {
                     int bytesToWrite = Math.min(25, bytesToSend);
                     outputStream.write(combinedArray, offset, bytesToWrite);
                     outputStream.flush();
 
                     offset += bytesToWrite;
                     bytesToSend -= bytesToWrite;
-                }
             }
+
         }
 
     }

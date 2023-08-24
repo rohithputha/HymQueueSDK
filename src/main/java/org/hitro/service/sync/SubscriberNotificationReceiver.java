@@ -19,6 +19,7 @@ public class SubscriberNotificationReceiver<T> implements Runnable{
 
     public void listenToNotifications() throws InterruptedException {
         while(true){
+            System.out.println("reading data of subscriber");
             Object data = resposeHolder.getSubscriberNotifications().take();
             List<T> listData = (List<T>) data;
             channelSubscriberMap.get((String)listData.get(2)).execute(listData);
@@ -31,5 +32,21 @@ public class SubscriberNotificationReceiver<T> implements Runnable{
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static SubscriberNotificationReceiver subscriberNotificationReceiver;
+    private static Thread thread;
+
+    public static SubscriberNotificationReceiver getInstance(){
+        if(subscriberNotificationReceiver==null){
+            synchronized (SubscriberNotificationReceiver.class){
+                if(subscriberNotificationReceiver==null){
+                    subscriberNotificationReceiver= new SubscriberNotificationReceiver();
+                    thread = new Thread(subscriberNotificationReceiver);
+                    thread.start();
+                }
+            }
+        }
+        return subscriberNotificationReceiver;
     }
 }

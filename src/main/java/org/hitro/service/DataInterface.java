@@ -8,7 +8,6 @@ import org.hitro.service.sync.DataSender;
 public class DataInterface {
     private final DataSender dataSender;
     private final DataReceiver dataReceiver;
-
     private Thread dsThread;
     private Thread drThread;
 

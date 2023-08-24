@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ResposeHolder<T> {
     private Map<String, List<T>> commandIdResponseMap;
-
     @Getter
     private BlockingQueue<List<T>> subscriberNotifications;
     private ResposeHolder(){
@@ -22,6 +21,7 @@ public class ResposeHolder<T> {
     }
 
     public void addResponse(List<T> resp) throws InterruptedException {
+        System.out.println("response .."+resp);
         if(resp.size()>=2 &&  ((String)resp.get(1)).equals("subscriberCallback")){
             subscriberNotifications.put(resp);
         }
