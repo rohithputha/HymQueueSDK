@@ -17,8 +17,20 @@ public class Main {
         HymQueue hymQueue = SyncHymQueue.getInstance(hymQueueSdkConfiguration);
 
         Subscriber subscriber = new TestSubscriberImplementation();
-//        hymQueue.createChannel();
+        hymQueue.createChannel();
         hymQueue.addSubscriber(subscriber);
-        hymQueue.addData(100D);
+
+        new Thread(()->{
+            for (int i=0;i<10000;i++) hymQueue.addData("holad whats up");
+        }).start();
+
+        new Thread(()->{
+            for (int i=0;i<50000;i++) hymQueue.addData(1020D);
+        }).start();
+
+        new Thread(()->{
+            for (int i=0;i<50000;i++) hymQueue.addData(1040D);
+        }).start();
+        Thread.sleep(10000);
     }
 }

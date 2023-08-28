@@ -21,11 +21,10 @@ public class ResposeHolder<T> {
     }
 
     public void addResponse(List<T> resp) throws InterruptedException {
-        System.out.println("response .."+resp);
         if(resp.size()>=2 &&  ((String)resp.get(1)).equals("subscriberCallback")){
             subscriberNotifications.put(resp);
         }
-        else{
+        else if(resp.size()>=2){
             commandIdResponseMap.put((String)resp.get(0),resp);
         }
     }

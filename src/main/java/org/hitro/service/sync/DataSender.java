@@ -24,21 +24,18 @@ public class DataSender<T> implements Runnable{
             Socket socket = SocketFactory.getSocket();
 
             byte[] encodedData = IBinaryProtocol.getInstance().encode(data);
-            byte[] commandSep = Constants.getCommandSeparator();
-            byte[] combinedArray = new byte[encodedData.length + commandSep.length];
-            System.arraycopy(encodedData, 0, combinedArray, 0, encodedData.length);
-            System.arraycopy(commandSep, 0, combinedArray, encodedData.length, commandSep.length);
             OutputStream outputStream = null;
             synchronized (socket) {
                 outputStream = socket.getOutputStream();
             }
-            int bytesToSend = combinedArray.length;
+            int bytesToSend =encodedData.length;
             int offset=0;
             while (bytesToSend > 0) {
                     int bytesToWrite = Math.min(25, bytesToSend);
-                    outputStream.write(combinedArray, offset, bytesToWrite);
-                    outputStream.flush();
-
+                    synchronized (outputStream){
+                        outputStream.write(encodedData, offset, bytesToWrite);
+                        outputStream.flush();
+                    }
                     offset += bytesToWrite;
                     bytesToSend -= bytesToWrite;
             }

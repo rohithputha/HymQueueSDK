@@ -36,7 +36,7 @@ public class DataReceiver implements Runnable{
                         inputCommandsByteList.get(inputCommandsByteList.size()-1)==Constants.getCommandSeparator()[1]
             ){
                     byte[] data = this.convertToByteArray(inputCommandsByteList);
-                    System.out.println(data.length);
+//                    System.out.println(data.length);
                     ResposeHolder.getInstance().addResponse((List<T>) IBinaryProtocol.getInstance().decode(data));
             }
         }

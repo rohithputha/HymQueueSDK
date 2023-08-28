@@ -1,5 +1,8 @@
 package org.hitro.sdk.publicinterfaces;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface HymQueue {
     public boolean createChannel();
 
@@ -7,5 +10,9 @@ public interface HymQueue {
 
     public boolean addSubscriber(Subscriber subscriber) throws InterruptedException;
 
-    public <T> T getData();
+    public <T> List<T> getData();
+
+    default String getUUID(){
+        return UUID.randomUUID().toString().replace("-","");
+    }
 }
